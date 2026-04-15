@@ -92,7 +92,7 @@ class LcmContextEngine(ContextEngine):
 
     def __init__(
         self,
-        model: str,
+        model: str = "",
         base_url: str = "",
         api_key: str = "",
         provider: str = "",

@@ -27,8 +27,8 @@ def register(ctx):
         sys.path.insert(0, src_dir)
 
     try:
-        from lossless_hermes import LCMContextEngine
-        engine = LCMContextEngine()
+        from lossless_hermes import LcmContextEngine
+        engine = LcmContextEngine()
         ctx.register_context_engine(engine)
         logger.info("LCM context engine registered via plugin system")
     except Exception as exc:
