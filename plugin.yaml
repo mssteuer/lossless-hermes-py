@@ -1,0 +1,53 @@
+name: "lossless-claw"
+version: "1.0.0"
+description: "Lossless Context Management (LCM) engine with DAG-based summarization"
+author: "Claude Code Team"
+type: "context_engine"
+
+config:
+  enabled: true
+  context_threshold: 0.75
+  fresh_tail_count: 64
+  fresh_tail_max_tokens: null
+  leaf_chunk_tokens: 20000
+  leaf_target_tokens: 2400
+  condensed_target_tokens: 2000
+  leaf_min_fanout: 8
+  condensed_min_fanout: 4
+  condensed_min_fanout_hard: 2
+  incremental_max_depth: 1
+  
+  # LLM settings
+  summary_provider: "openai"  # via litellm proxy
+  summary_model: "gemini-2.5-flash"  # via litellm proxy at localhost:4000
+  summary_timeout_ms: 60000
+  custom_instructions: ""
+  
+  # Circuit breaker
+  circuit_breaker_threshold: 5
+  circuit_breaker_cooldown_ms: 1800000
+  
+  # Cache-aware compaction
+  cache_aware_compaction:
+    enabled: true
+    cache_ttl_seconds: 300
+    max_cold_cache_catchup_passes: 2
+    hot_cache_pressure_factor: 4
+    hot_cache_budget_headroom_ratio: 0.2
+    cold_cache_observation_threshold: 3
+  
+  # Dynamic chunk sizing
+  dynamic_leaf_chunk_tokens:
+    enabled: true
+    max: 40000
+
+dependencies:
+  - "sqlite3"
+
+tools:
+  - name: "lcm_grep"
+    description: "Search conversation history using full-text search"
+  - name: "lcm_describe" 
+    description: "Get LCM state and statistics"
+  - name: "lcm_expand"
+    description: "Expand specific content from history"
