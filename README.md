@@ -35,57 +35,47 @@ LCM operates in two compaction passes that build a summary DAG:
 
 ## Installation
 
-```bash
-pip install lossless-hermes-py
-```
-
-### Setting Up as a Hermes Agent Plugin
-
-After installing, three steps are needed to activate LCM as your context engine:
-
-**Step 1 — Symlink the package into the plugin directory:**
+### Hermes Agent Plugin (recommended)
 
 ```bash
-# Find where pip installed the package
-HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
-LCM_PATH=$(python -c "import lossless_hermes; import os; print(os.path.dirname(lossless_hermes.__file__))")
-
-# Create the symlink
-ln -s "$LCM_PATH" "$HERMES_HOME/hermes-agent/plugins/context_engine/lcm"
+hermes plugins install mssteuer/lossless-hermes-py
 ```
 
-**Step 2 — Enable the engine in `config.yaml`:**
-
-Add this at the **top level** of `~/.hermes/config.yaml` (not under `agent:`):
+Then enable the engine in `~/.hermes/config.yaml` (top level, not under `agent:`):
 
 ```yaml
 context:
   engine: lcm
 ```
 
-**Step 3 — (Optional) Configure the summarization model:**
-
-By default, LCM uses your main model for summarization. To use a cheaper/faster model instead, edit the `plugin.yaml` inside the symlinked directory:
+**(Optional)** Configure a dedicated summarization model via environment variables in `~/.hermes/.env`:
 
 ```bash
-# Edit the plugin config
-nano "$HERMES_HOME/hermes-agent/plugins/context_engine/lcm/plugin.yaml"
+LCM_SUMMARY_MODEL=gemini-2.5-flash
+LCM_SUMMARY_PROVIDER=openai          # your litellm provider name
 ```
 
-```yaml
-config:
-  summary_provider: "openai"          # or your litellm provider name
-  summary_model: "gemini-2.5-flash"   # any model your provider supports
-```
-
-**Step 4 — Restart the gateway:**
+Or edit the plugin's `plugin.yaml` directly:
 
 ```bash
-systemctl --user restart hermes-gateway.service
-# Or however you restart your Hermes instance
+nano ~/.hermes/plugins/lossless-hermes/plugin.yaml
 ```
 
-You should see `LCM context engine plugin registered` in the gateway logs. The agent will now have `lcm_grep`, `lcm_describe`, and `lcm_expand` tools available.
+Restart the gateway:
+
+```bash
+hermes gateway restart
+```
+
+The agent will now have `lcm_grep`, `lcm_describe`, and `lcm_expand` tools available.
+
+### Via pip
+
+```bash
+pip install lossless-hermes-py
+```
+
+This is useful for standalone library usage (see below) or if you prefer managing Python packages separately. For use with Hermes, the `hermes plugins install` method above is simpler.
 
 ### Standalone Usage
 
