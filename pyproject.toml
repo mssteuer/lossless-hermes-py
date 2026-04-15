@@ -58,7 +58,7 @@ openai = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/lossless_claw"]
+packages = ["src/lossless_hermes"]
 
 [tool.hatch.build.targets.sdist]
 include = [

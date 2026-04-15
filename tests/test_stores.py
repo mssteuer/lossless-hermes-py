@@ -3,11 +3,11 @@
 import pytest
 from datetime import datetime
 
-from lossless_claw.store.conversation import (
+from lossless_hermes.store.conversation import (
     ConversationStore, CreateMessageInput, CreateMessagePartInput,
     MessageSearchInput,
 )
-from lossless_claw.store.summary import SummaryStore, CreateSummaryInput
+from lossless_hermes.store.summary import SummaryStore, CreateSummaryInput
 
 
 class TestConversationStore:

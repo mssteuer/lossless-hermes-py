@@ -4,13 +4,13 @@ import os
 import pytest
 from datetime import datetime, timedelta
 
-from lossless_claw.db.config import LcmConfig, CacheAwareCompactionConfig, DynamicLeafChunkTokensConfig, resolve_lcm_config
-from lossless_claw.db.connection import LcmDatabase
-from lossless_claw.db.migration import run_lcm_migrations
-from lossless_claw.store.conversation import ConversationStore, CreateMessageInput
-from lossless_claw.store.summary import SummaryStore, CreateSummaryInput
-from lossless_claw.compaction import CompactionEngine, CompactionConfig
-from lossless_claw.summarizer import SummaryOptions
+from lossless_hermes.db.config import LcmConfig, CacheAwareCompactionConfig, DynamicLeafChunkTokensConfig, resolve_lcm_config
+from lossless_hermes.db.connection import LcmDatabase
+from lossless_hermes.db.migration import run_lcm_migrations
+from lossless_hermes.store.conversation import ConversationStore, CreateMessageInput
+from lossless_hermes.store.summary import SummaryStore, CreateSummaryInput
+from lossless_hermes.compaction import CompactionEngine, CompactionConfig
+from lossless_hermes.summarizer import SummaryOptions
 
 
 def make_default_config(db_path=":memory:"):

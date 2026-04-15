@@ -1,6 +1,6 @@
-"""Tests for lossless_claw.db.config module."""
+"""Tests for lossless_hermes.db.config module."""
 
-from lossless_claw.db.config import (
+from lossless_hermes.db.config import (
     resolve_lcm_config,
     resolve_hermes_state_dir,
     to_number, to_int, to_bool, to_str, to_str_array,

@@ -3,8 +3,8 @@
 import pytest
 import os
 
-from lossless_claw import LcmContextEngine
-from lossless_claw.tokens import estimate_messages_tokens
+from lossless_hermes import LcmContextEngine
+from lossless_hermes.tokens import estimate_messages_tokens
 
 
 class TestLcmContextEngine:

@@ -1,11 +1,11 @@
-"""Tests for lossless_claw.assembler module."""
+"""Tests for lossless_hermes.assembler module."""
 
 import pytest
 from datetime import datetime, timedelta
 
-from lossless_claw.assembler import ContextAssembler, AssemblyConfig
-from lossless_claw.store.conversation import CreateMessageInput
-from lossless_claw.store.summary import CreateSummaryInput
+from lossless_hermes.assembler import ContextAssembler, AssemblyConfig
+from lossless_hermes.store.conversation import CreateMessageInput
+from lossless_hermes.store.summary import CreateSummaryInput
 
 
 class TestContextAssembler:

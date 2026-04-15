@@ -19,7 +19,7 @@ jobs:
       - run: pip install -e '.[dev]'
       - run: ruff check .
       - run: ruff format --check .
-      - run: pytest --cov=lossless_claw --cov-report=term-missing
+      - run: pytest --cov=lossless_hermes --cov-report=term-missing
 
   build:
     runs-on: ubuntu-latest

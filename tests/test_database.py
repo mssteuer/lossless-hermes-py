@@ -1,10 +1,10 @@
-"""Tests for lossless_claw.db.connection and migration modules."""
+"""Tests for lossless_hermes.db.connection and migration modules."""
 
 import sqlite3
 import pytest
 
-from lossless_claw.db.connection import LcmDatabase
-from lossless_claw.db.migration import (
+from lossless_hermes.db.connection import LcmDatabase
+from lossless_hermes.db.migration import (
     run_lcm_migrations, table_exists, get_table_columns,
     create_core_tables, create_fts_tables, create_indices,
 )

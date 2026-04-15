@@ -1,6 +1,6 @@
-"""Tests for lossless_claw.store.identity module."""
+"""Tests for lossless_hermes.store.identity module."""
 
-from lossless_claw.store.identity import build_message_identity_hash, normalize_message_content
+from lossless_hermes.store.identity import build_message_identity_hash, normalize_message_content
 
 
 class TestBuildMessageIdentityHash:

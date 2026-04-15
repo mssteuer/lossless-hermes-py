@@ -1,7 +1,7 @@
-"""Tests for lossless_claw.tokens module."""
+"""Tests for lossless_hermes.tokens module."""
 
 import math
-from lossless_claw.tokens import (
+from lossless_hermes.tokens import (
     is_cjk_code_point,
     estimate_code_point_tokens,
     estimate_tokens,

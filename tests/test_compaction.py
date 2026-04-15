@@ -1,10 +1,10 @@
-"""Tests for lossless_claw.compaction module."""
+"""Tests for lossless_hermes.compaction module."""
 
 import pytest
 
-from lossless_claw.compaction import CompactionEngine, CompactionConfig
-from lossless_claw.db.config import CacheAwareCompactionConfig
-from lossless_claw.store.conversation import CreateMessageInput
+from lossless_hermes.compaction import CompactionEngine, CompactionConfig
+from lossless_hermes.db.config import CacheAwareCompactionConfig
+from lossless_hermes.store.conversation import CreateMessageInput
 from tests.conftest import MockSyncSummarizer
 
 
@@ -52,7 +52,7 @@ class TestShouldCompact:
         assert reason == "initial_compaction"
 
     def test_threshold_exceeded_with_existing_summaries(self, engine, summary_store, sample_conversation):
-        from lossless_claw.store.summary import CreateSummaryInput
+        from lossless_hermes.store.summary import CreateSummaryInput
         conv, _ = sample_conversation
         summary_store.create_summary(CreateSummaryInput(
             conversation_id=conv.conversation_id,
@@ -65,7 +65,7 @@ class TestShouldCompact:
 
 class TestCacheAwareCompaction:
     def test_hot_cache_pressure_relief(self, conversation_store, summary_store, sample_conversation):
-        from lossless_claw.store.summary import CreateSummaryInput
+        from lossless_hermes.store.summary import CreateSummaryInput
         conv, _ = sample_conversation
         config = CompactionConfig(
             leaf_chunk_tokens=500, leaf_target_tokens=100, condensed_target_tokens=80,
@@ -89,7 +89,7 @@ class TestCacheAwareCompaction:
         assert reason == "hot_cache_pressure_relief"
 
     def test_cold_cache_catchup(self, conversation_store, summary_store, sample_conversation):
-        from lossless_claw.store.summary import CreateSummaryInput
+        from lossless_hermes.store.summary import CreateSummaryInput
         conv, _ = sample_conversation
         config = CompactionConfig(
             leaf_chunk_tokens=500, leaf_target_tokens=100, condensed_target_tokens=80,

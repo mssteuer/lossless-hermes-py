@@ -54,12 +54,12 @@ config:
   summary_model: "gemini-2.5-flash"
 ```
 
-The plugin registers via the `register()` function in `lossless_claw.__init__`, which returns the `LcmContextEngine` class.
+The plugin registers via the `register()` function in `lossless_hermes.__init__`, which returns the `LcmContextEngine` class.
 
 ### Standalone Usage
 
 ```python
-from lossless_claw import LcmContextEngine
+from lossless_hermes import LcmContextEngine
 
 engine = LcmContextEngine(
     model="gemini-2.5-flash",
@@ -180,7 +180,7 @@ Drill into specific content. Expand a message to see its full text, a summary to
 ## Architecture
 
 ```
-src/lossless_claw/
+src/lossless_hermes/
     __init__.py          # LcmContextEngine — main plugin class, Hermes integration
     compaction.py        # CompactionEngine — leaf/condensed passes, cache-aware policy
     assembler.py         # ContextAssembler — reconstructs optimal context from DAG
