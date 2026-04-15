@@ -4,16 +4,14 @@ Handles schema creation and upgrades for the LCM database.
 Based on the TypeScript migration.ts implementation.
 """
 
-import sqlite3
 import logging
-from typing import List, Dict, Any
-from .connection import LcmDatabase
 
+from .connection import LcmDatabase
 
 logger = logging.getLogger(__name__)
 
 
-def get_table_columns(db: LcmDatabase, table_name: str) -> List[str]:
+def get_table_columns(db: LcmDatabase, table_name: str) -> list[str]:
     """Get the column names for a table."""
     cursor = db.execute(f"PRAGMA table_info({table_name})")
     return [row[1] for row in cursor.fetchall()]  # row[1] is the column name
@@ -21,16 +19,13 @@ def get_table_columns(db: LcmDatabase, table_name: str) -> List[str]:
 
 def table_exists(db: LcmDatabase, table_name: str) -> bool:
     """Check if a table exists."""
-    cursor = db.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-        (table_name,)
-    )
+    cursor = db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
     return cursor.fetchone() is not None
 
 
 def create_core_tables(db: LcmDatabase):
     """Create the core LCM tables."""
-    
+
     # Conversations table
     db.execute("""
         CREATE TABLE IF NOT EXISTS conversations (
@@ -46,8 +41,8 @@ def create_core_tables(db: LcmDatabase):
             UNIQUE(session_id, session_key)
         )
     """)
-    
-    # Messages table  
+
+    # Messages table
     db.execute("""
         CREATE TABLE IF NOT EXISTS messages (
             message_id INTEGER PRIMARY KEY,
@@ -61,7 +56,7 @@ def create_core_tables(db: LcmDatabase):
             UNIQUE(conversation_id, seq)
         )
     """)
-    
+
     # Message parts table (for detailed message structure)
     db.execute("""
         CREATE TABLE IF NOT EXISTS message_parts (
@@ -82,7 +77,7 @@ def create_core_tables(db: LcmDatabase):
             UNIQUE(message_id, ordinal)
         )
     """)
-    
+
     # Summaries table (DAG nodes)
     db.execute("""
         CREATE TABLE IF NOT EXISTS summaries (
@@ -102,7 +97,7 @@ def create_core_tables(db: LcmDatabase):
             created_at TEXT DEFAULT (datetime('now'))
         )
     """)
-    
+
     # Summary to message relationships (many-to-many)
     db.execute("""
         CREATE TABLE IF NOT EXISTS summary_messages (
@@ -111,7 +106,7 @@ def create_core_tables(db: LcmDatabase):
             PRIMARY KEY (summary_id, message_id)
         )
     """)
-    
+
     # Summary DAG structure (parent-child relationships)
     db.execute("""
         CREATE TABLE IF NOT EXISTS summary_parents (
@@ -120,7 +115,7 @@ def create_core_tables(db: LcmDatabase):
             PRIMARY KEY (parent_id, child_id)
         )
     """)
-    
+
     # Context items (the assembled context window)
     db.execute("""
         CREATE TABLE IF NOT EXISTS context_items (
@@ -137,7 +132,7 @@ def create_core_tables(db: LcmDatabase):
             )
         )
     """)
-    
+
     # Compaction telemetry for cache-aware compaction
     db.execute("""
         CREATE TABLE IF NOT EXISTS conversation_compaction_telemetry (
@@ -158,7 +153,7 @@ def create_core_tables(db: LcmDatabase):
             model TEXT
         )
     """)
-    
+
     # Compaction maintenance tracking
     db.execute("""
         CREATE TABLE IF NOT EXISTS compaction_maintenance (
@@ -172,7 +167,7 @@ def create_core_tables(db: LcmDatabase):
 
 def create_fts_tables(db: LcmDatabase):
     """Create FTS5 full-text search tables."""
-    
+
     # FTS5 table for message content search
     db.execute("""
         CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
@@ -183,8 +178,8 @@ def create_fts_tables(db: LcmDatabase):
             created_at UNINDEXED
         )
     """)
-    
-    # FTS5 table for summary content search  
+
+    # FTS5 table for summary content search
     db.execute("""
         CREATE VIRTUAL TABLE IF NOT EXISTS summaries_fts USING fts5(
             summary_id UNINDEXED,
@@ -198,33 +193,33 @@ def create_fts_tables(db: LcmDatabase):
 
 def create_indices(db: LcmDatabase):
     """Create database indices for performance."""
-    
+
     # Conversation indices
     db.execute("CREATE INDEX IF NOT EXISTS idx_conversations_session_id ON conversations(session_id)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_conversations_active ON conversations(active)")
-    
-    # Message indices  
+
+    # Message indices
     db.execute("CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_messages_seq ON messages(conversation_id, seq)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_messages_role ON messages(role)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_messages_identity_hash ON messages(identity_hash)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at)")
-    
+
     # Message parts indices
     db.execute("CREATE INDEX IF NOT EXISTS idx_message_parts_message_id ON message_parts(message_id)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_message_parts_session_id ON message_parts(session_id)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_message_parts_tool_call_id ON message_parts(tool_call_id)")
-    
+
     # Summary indices
     db.execute("CREATE INDEX IF NOT EXISTS idx_summaries_conversation_id ON summaries(conversation_id)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_summaries_kind ON summaries(kind)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_summaries_depth ON summaries(depth)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_summaries_created_at ON summaries(created_at)")
-    
+
     # Summary relationship indices
     db.execute("CREATE INDEX IF NOT EXISTS idx_summary_messages_message_id ON summary_messages(message_id)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_summary_parents_child_id ON summary_parents(child_id)")
-    
+
     # Context items indices
     db.execute("CREATE INDEX IF NOT EXISTS idx_context_items_conversation ON context_items(conversation_id, position)")
     db.execute("CREATE INDEX IF NOT EXISTS idx_context_items_message_id ON context_items(message_id)")
@@ -233,41 +228,41 @@ def create_indices(db: LcmDatabase):
 
 def ensure_columns_exist(db: LcmDatabase):
     """Add any missing columns to existing tables."""
-    
+
     # Check and add missing columns to summaries
     summary_columns = get_table_columns(db, "summaries")
-    
+
     if "depth" not in summary_columns:
         db.execute("ALTER TABLE summaries ADD COLUMN depth INTEGER NOT NULL DEFAULT 0")
-    
+
     if "earliest_at" not in summary_columns:
         db.execute("ALTER TABLE summaries ADD COLUMN earliest_at TEXT")
-        
+
     if "latest_at" not in summary_columns:
         db.execute("ALTER TABLE summaries ADD COLUMN latest_at TEXT")
-        
+
     if "descendant_count" not in summary_columns:
         db.execute("ALTER TABLE summaries ADD COLUMN descendant_count INTEGER NOT NULL DEFAULT 0")
-        
+
     if "descendant_token_count" not in summary_columns:
         db.execute("ALTER TABLE summaries ADD COLUMN descendant_token_count INTEGER NOT NULL DEFAULT 0")
-        
+
     if "source_message_token_count" not in summary_columns:
         db.execute("ALTER TABLE summaries ADD COLUMN source_message_token_count INTEGER NOT NULL DEFAULT 0")
-        
+
     if "model" not in summary_columns:
         db.execute("ALTER TABLE summaries ADD COLUMN model TEXT NOT NULL DEFAULT 'unknown'")
-    
+
     # Check and add missing columns to messages
     message_columns = get_table_columns(db, "messages")
-    
+
     if "identity_hash" not in message_columns:
         db.execute("ALTER TABLE messages ADD COLUMN identity_hash TEXT")
-    
+
     # Check and add missing telemetry columns
     if table_exists(db, "conversation_compaction_telemetry"):
         telemetry_columns = get_table_columns(db, "conversation_compaction_telemetry")
-        
+
         missing_cols = [
             ("consecutive_cold_observations", "INTEGER NOT NULL DEFAULT 0"),
             ("last_leaf_compaction_at", "TEXT"),
@@ -279,7 +274,7 @@ def ensure_columns_exist(db: LcmDatabase):
             ("provider", "TEXT"),
             ("model", "TEXT"),
         ]
-        
+
         for col_name, col_def in missing_cols:
             if col_name not in telemetry_columns:
                 db.execute(f"ALTER TABLE conversation_compaction_telemetry ADD COLUMN {col_name} {col_def}")
@@ -287,7 +282,7 @@ def ensure_columns_exist(db: LcmDatabase):
 
 def seed_fts_tables(db: LcmDatabase):
     """Populate FTS tables with existing data."""
-    
+
     # Only seed if FTS tables are empty
     cursor = db.execute("SELECT COUNT(*) FROM messages_fts")
     if cursor.fetchone()[0] == 0:
@@ -297,7 +292,7 @@ def seed_fts_tables(db: LcmDatabase):
             SELECT message_id, conversation_id, role, content, created_at
             FROM messages
         """)
-    
+
     cursor = db.execute("SELECT COUNT(*) FROM summaries_fts")
     if cursor.fetchone()[0] == 0:
         # Populate summaries FTS
@@ -310,31 +305,31 @@ def seed_fts_tables(db: LcmDatabase):
 
 def run_lcm_migrations(db: LcmDatabase):
     """Run all LCM database migrations.
-    
-    This creates the full schema and ensures all tables, indices, 
+
+    This creates the full schema and ensures all tables, indices,
     and FTS tables are properly set up.
     """
     logger.info("Running LCM database migrations")
-    
+
     try:
-        with db.transaction() as conn:
+        with db.transaction():
             # Create core tables
             create_core_tables(db)
-            
+
             # Ensure any missing columns exist (for upgrades)
             ensure_columns_exist(db)
-            
+
             # Create indices
             create_indices(db)
-            
+
             # Create FTS tables
             create_fts_tables(db)
-            
+
             # Seed FTS tables with existing data
             seed_fts_tables(db)
-            
+
             logger.info("LCM database migrations completed successfully")
-            
+
     except Exception as e:
         logger.error(f"LCM database migration failed: {e}")
         raise

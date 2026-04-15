@@ -1,10 +1,8 @@
 """Integration tests for LcmContextEngine."""
 
 import pytest
-import os
 
 from lossless_hermes import LcmContextEngine
-from lossless_hermes.tokens import estimate_messages_tokens
 
 
 class TestLcmContextEngine:
@@ -19,7 +17,7 @@ class TestLcmContextEngine:
                 "condensed_min_fanout": 2,
                 "condensed_min_fanout_hard": 2,
                 "leaf_chunk_tokens": 500,
-            }
+            },
         )
         return e
 
@@ -36,22 +34,23 @@ class TestLcmContextEngine:
         assert engine.should_compress(prompt_tokens=100000) is True
 
     def test_should_compress_disabled(self, tmp_path):
-        import os
         e = LcmContextEngine(
             model="test",
             plugin_config={
                 "database_path": str(tmp_path / "disabled.db"),
-            }
+            },
         )
         e.config.enabled = False  # Directly disable
         assert e.should_compress(prompt_tokens=999999) is False
 
     def test_update_from_response(self, engine):
-        engine.update_from_response({
-            "prompt_tokens": 5000,
-            "completion_tokens": 200,
-            "total_tokens": 5200,
-        })
+        engine.update_from_response(
+            {
+                "prompt_tokens": 5000,
+                "completion_tokens": 200,
+                "total_tokens": 5200,
+            }
+        )
         assert engine.last_prompt_tokens == 5000
         assert engine.last_completion_tokens == 200
 
@@ -109,7 +108,7 @@ class TestLcmContextEngine:
             model="test",
             plugin_config={
                 "database_path": str(tmp_path / "no-tools.db"),
-            }
+            },
         )
         schemas = e.get_tool_schemas()
         assert isinstance(schemas, list)

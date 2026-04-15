@@ -1,15 +1,16 @@
 """Shared fixtures for LCM tests."""
 
-import os
 import pytest
-from datetime import datetime, timedelta
 
-from lossless_hermes.db.config import LcmConfig, CacheAwareCompactionConfig, DynamicLeafChunkTokensConfig, resolve_lcm_config
+from lossless_hermes.db.config import (
+    CacheAwareCompactionConfig,
+    DynamicLeafChunkTokensConfig,
+    LcmConfig,
+)
 from lossless_hermes.db.connection import LcmDatabase
 from lossless_hermes.db.migration import run_lcm_migrations
 from lossless_hermes.store.conversation import ConversationStore, CreateMessageInput
-from lossless_hermes.store.summary import SummaryStore, CreateSummaryInput
-from lossless_hermes.compaction import CompactionEngine, CompactionConfig
+from lossless_hermes.store.summary import SummaryStore
 from lossless_hermes.summarizer import SummaryOptions
 
 
@@ -105,31 +106,36 @@ def sample_conversation(conversation_store):
     """Create a sample conversation with messages."""
     conv = conversation_store.create_conversation("test-session")
     messages = []
-    for i, (role, content) in enumerate([
-        ("user", "Hello, can you help me with Python?"),
-        ("assistant", "Of course! What do you need help with?"),
-        ("user", "I need to parse JSON files and extract specific fields."),
-        ("assistant", "You can use the json module. Here's an example..."),
-        ("user", "What about handling nested objects?"),
-        ("assistant", "For nested objects, you can use recursive access or jsonpath."),
-        ("user", "Can you show me error handling for malformed JSON?"),
-        ("assistant", "Sure, wrap json.loads in a try/except for JSONDecodeError."),
-        ("user", "Thanks! Now how about writing JSON back to a file?"),
-        ("assistant", "Use json.dump() with an open file handle and indent=2 for readability."),
-    ]):
-        msg = conversation_store.create_message(CreateMessageInput(
-            conversation_id=conv.conversation_id,
-            seq=i + 1,
-            role=role,
-            content=content,
-            token_count=len(content) // 4,
-        ))
+    for i, (role, content) in enumerate(
+        [
+            ("user", "Hello, can you help me with Python?"),
+            ("assistant", "Of course! What do you need help with?"),
+            ("user", "I need to parse JSON files and extract specific fields."),
+            ("assistant", "You can use the json module. Here's an example..."),
+            ("user", "What about handling nested objects?"),
+            ("assistant", "For nested objects, you can use recursive access or jsonpath."),
+            ("user", "Can you show me error handling for malformed JSON?"),
+            ("assistant", "Sure, wrap json.loads in a try/except for JSONDecodeError."),
+            ("user", "Thanks! Now how about writing JSON back to a file?"),
+            ("assistant", "Use json.dump() with an open file handle and indent=2 for readability."),
+        ]
+    ):
+        msg = conversation_store.create_message(
+            CreateMessageInput(
+                conversation_id=conv.conversation_id,
+                seq=i + 1,
+                role=role,
+                content=content,
+                token_count=len(content) // 4,
+            )
+        )
         messages.append(msg)
     return conv, messages
 
 
 class MockSyncSummarizer:
     """Deterministic mock summarizer for tests."""
+
     model = "mock-model"
 
     def summarize(self, text, aggressive=False, options=None):

@@ -1,12 +1,12 @@
 """Tests for lossless_hermes.db.connection and migration modules."""
 
-import sqlite3
 import pytest
 
 from lossless_hermes.db.connection import LcmDatabase
 from lossless_hermes.db.migration import (
-    run_lcm_migrations, table_exists, get_table_columns,
-    create_core_tables, create_fts_tables, create_indices,
+    get_table_columns,
+    run_lcm_migrations,
+    table_exists,
 )
 from tests.conftest import make_default_config
 
@@ -134,9 +134,7 @@ class TestMigrations:
         config = make_default_config(":memory:")
         db = LcmDatabase(config)
         run_lcm_migrations(db)
-        cursor = db.execute(
-            "SELECT name FROM sqlite_master WHERE type='index' AND name LIKE 'idx_%'"
-        )
+        cursor = db.execute("SELECT name FROM sqlite_master WHERE type='index' AND name LIKE 'idx_%'")
         indices = [row[0] for row in cursor.fetchall()]
         assert "idx_messages_conversation_id" in indices
         assert "idx_summaries_conversation_id" in indices

@@ -1,11 +1,16 @@
 """Tests for lossless_hermes.db.config module."""
 
 from lossless_hermes.db.config import (
-    resolve_lcm_config,
-    resolve_hermes_state_dir,
-    to_number, to_int, to_bool, to_str, to_str_array,
-    parse_fallback_providers, to_fallback_provider_array,
     LcmConfig,
+    parse_fallback_providers,
+    resolve_hermes_state_dir,
+    resolve_lcm_config,
+    to_bool,
+    to_fallback_provider_array,
+    to_int,
+    to_number,
+    to_str,
+    to_str_array,
 )
 
 
@@ -16,7 +21,7 @@ class TestHelpers:
         assert to_number("2.5") == 2.5
         assert to_number("abc") is None
         assert to_number(None) is None
-        assert to_number(float('nan')) is None
+        assert to_number(float("nan")) is None
 
     def test_to_int(self):
         assert to_int(42) == 42
@@ -68,9 +73,7 @@ class TestParseFallbackProviders:
 
 class TestToFallbackProviderArray:
     def test_valid(self):
-        result = to_fallback_provider_array([
-            {"provider": "openai", "model": "gpt-4"}
-        ])
+        result = to_fallback_provider_array([{"provider": "openai", "model": "gpt-4"}])
         assert result == [{"provider": "openai", "model": "gpt-4"}]
 
     def test_invalid(self):
@@ -81,6 +84,7 @@ class TestToFallbackProviderArray:
 class TestResolveHermesStateDir:
     def test_default(self):
         import os
+
         result = resolve_hermes_state_dir({})
         assert result == os.path.expanduser("~/.hermes")
 
@@ -142,9 +146,10 @@ class TestResolveLcmConfig:
         assert config.bootstrap_max_tokens == max(6000, int(20000 * 0.3))
 
     def test_cache_aware_compaction(self):
-        config = resolve_lcm_config(env={}, plugin_config={
-            "cache_aware_compaction": {"enabled": False, "cache_ttl_seconds": 600}
-        })
+        config = resolve_lcm_config(
+            env={},
+            plugin_config={"cache_aware_compaction": {"enabled": False, "cache_ttl_seconds": 600}},
+        )
         # `to_bool(False)` returns False, but the `or True` fallback makes it True
         # when there's no env var. The config uses: to_bool(cache_aware.get("enabled")) or True
         # Since False is falsy, `False or True` → True. This is the actual behavior.
@@ -152,15 +157,11 @@ class TestResolveLcmConfig:
         assert config.cache_aware_compaction.cache_ttl_seconds == 600
 
     def test_fallback_providers_from_env(self):
-        config = resolve_lcm_config(
-            env={"LCM_FALLBACK_PROVIDERS": "openai/gpt-4,anthropic/claude-3"}
-        )
+        config = resolve_lcm_config(env={"LCM_FALLBACK_PROVIDERS": "openai/gpt-4,anthropic/claude-3"})
         assert len(config.fallback_providers) == 2
 
     def test_ignore_session_patterns(self):
-        config = resolve_lcm_config(env={}, plugin_config={
-            "ignore_session_patterns": ["heartbeat", "test-*"]
-        })
+        config = resolve_lcm_config(env={}, plugin_config={"ignore_session_patterns": ["heartbeat", "test-*"]})
         assert config.ignore_session_patterns == ["heartbeat", "test-*"]
 
     def test_timezone_from_tz(self):

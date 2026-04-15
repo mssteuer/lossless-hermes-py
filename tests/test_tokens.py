@@ -1,30 +1,29 @@
 """Tests for lossless_hermes.tokens module."""
 
-import math
 from lossless_hermes.tokens import (
-    is_cjk_code_point,
     estimate_code_point_tokens,
-    estimate_tokens,
-    truncate_text_to_estimated_tokens,
-    estimate_messages_tokens,
     estimate_conversation_tokens,
+    estimate_messages_tokens,
+    estimate_tokens,
+    is_cjk_code_point,
+    truncate_text_to_estimated_tokens,
 )
 
 
 class TestIsCjkCodePoint:
     def test_ascii_not_cjk(self):
-        assert not is_cjk_code_point(ord('A'))
-        assert not is_cjk_code_point(ord(' '))
+        assert not is_cjk_code_point(ord("A"))
+        assert not is_cjk_code_point(ord(" "))
 
     def test_cjk_unified_ideographs(self):
-        assert is_cjk_code_point(0x4e00)  # 一
-        assert is_cjk_code_point(0x9fff)
+        assert is_cjk_code_point(0x4E00)  # 一
+        assert is_cjk_code_point(0x9FFF)
 
     def test_hiragana(self):
-        assert is_cjk_code_point(ord('あ'))  # 0x3042
+        assert is_cjk_code_point(ord("あ"))  # 0x3042
 
     def test_katakana(self):
-        assert is_cjk_code_point(ord('ア'))  # 0x30A2
+        assert is_cjk_code_point(ord("ア"))  # 0x30A2
 
     def test_hangul(self):
         assert is_cjk_code_point(0xAC00)  # 가
@@ -38,10 +37,10 @@ class TestIsCjkCodePoint:
 
 class TestEstimateCodePointTokens:
     def test_ascii(self):
-        assert estimate_code_point_tokens(ord('a')) == 0.25
+        assert estimate_code_point_tokens(ord("a")) == 0.25
 
     def test_cjk(self):
-        assert estimate_code_point_tokens(0x4e00) == 1.5
+        assert estimate_code_point_tokens(0x4E00) == 1.5
 
     def test_supplementary_plane(self):
         # Emoji on supplementary plane (not CJK)
@@ -125,16 +124,13 @@ class TestEstimateMessagesTokens:
         assert tokens == 10 + 2 + 10 + 1  # 23
 
     def test_with_tool_calls(self):
-        msgs = [{
-            "role": "assistant",
-            "content": "",
-            "tool_calls": [{
-                "function": {
-                    "name": "search",
-                    "arguments": '{"q":"test"}'
-                }
-            }]
-        }]
+        msgs = [
+            {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [{"function": {"name": "search", "arguments": '{"q":"test"}'}}],
+            }
+        ]
         tokens = estimate_messages_tokens(msgs)
         # 10 (overhead) + 0 (empty content) + 5 (tool overhead) + tokens("search") + tokens(arguments)
         assert tokens > 15
