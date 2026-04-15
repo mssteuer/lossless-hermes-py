@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "lossless-hermes-py"
-version = "0.1.4"
+version = "0.1.5"
 description = "Lossless Context Management (LCM) for Hermes Agent — DAG-based conversation summarization that never forgets"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -56,6 +56,9 @@ litellm = [
 openai = [
     "openai>=1.0",
 ]
+
+[project.entry-points."hermes_agent.plugins"]
+lossless-hermes = "lossless_hermes"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/lossless_hermes"]

@@ -22,7 +22,7 @@ class TestLcmContextEngine:
         return e
 
     def test_init(self, engine):
-        assert engine.name == "lcm"
+        assert engine.name == "lossless-hermes"
         assert engine.model == "test-model"
         assert engine.config.enabled is True
 
