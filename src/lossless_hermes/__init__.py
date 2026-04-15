@@ -149,7 +149,7 @@ class LcmContextEngine(ContextEngine):
         # LLM call function (will be injected)
         self.call_llm_fn = None
 
-        logger.info(f"LCM context engine initialized: model={model} provider={provider}")
+        logger.debug(f"LCM context engine constructed: model={model} provider={provider}")
 
     def _ensure_initialized(self):
         """Ensure database and stores are initialized."""
@@ -296,30 +296,55 @@ class LcmContextEngine(ContextEngine):
             return messages
 
     def _ingest_messages(self, conversation_id: int, messages: list[dict[str, Any]]):
-        """Ingest new messages into LCM storage."""
+        """Ingest new messages into LCM storage.
+        
+        Safe for progressive/repeated calls - uses identity hashing to
+        deduplicate messages that have already been stored.
+        """
         if not messages:
             return
 
+        import hashlib
+
+        # Get existing identity hashes to skip duplicates
+        try:
+            existing = self.conversation_store.db.execute(
+                "SELECT identity_hash FROM messages WHERE conversation_id = ? AND identity_hash IS NOT NULL",
+                (conversation_id,),
+            ).fetchall()
+            existing_hashes = {row[0] for row in existing}
+        except Exception:
+            existing_hashes = set()
+
         # Get current message count to determine sequence numbers
         latest_seq = self.conversation_store.get_latest_message_seq(conversation_id)
+        added = 0
 
-        for i, message in enumerate(messages):
+        for message in messages:
             role = message.get("role", "user")
             content = message.get("content", "")
+            content_str = str(content)
 
-            # Skip if already stored (simple dedup)
-            token_count = estimate_tokens(str(content))
+            # Compute identity hash for dedup
+            identity = hashlib.sha256(f"{role}:{content_str}".encode()).hexdigest()[:16]
+            if identity in existing_hashes:
+                continue
+
+            token_count = estimate_tokens(content_str)
 
             msg_input = CreateMessageInput(
                 conversation_id=conversation_id,
-                seq=latest_seq + i + 1,
+                seq=latest_seq + added + 1,
                 role=role,
-                content=str(content),
+                content=content_str,
                 token_count=token_count,
+                identity_hash=identity,
             )
 
             try:
                 self.conversation_store.create_message(msg_input)
+                existing_hashes.add(identity)
+                added += 1
             except Exception as e:
                 # Message might already exist, skip it
                 logger.debug(f"Skipping message ingestion: {e}")
@@ -376,6 +401,16 @@ class LcmContextEngine(ContextEngine):
             # Use current session if available, fall back to kwargs
             session_id = self.current_session_id or kwargs.get("session_id", "default_session")
             conversation_id = self.current_conversation_id or self._ensure_conversation(session_id)
+
+            # Progressive ingestion: ingest messages before handling tool calls
+            # so that grep/describe/expand have current data
+            messages = kwargs.get("messages")
+            if messages and conversation_id:
+                try:
+                    self._ensure_initialized()
+                    self._ingest_messages(conversation_id, messages)
+                except Exception as e:
+                    logger.debug(f"Progressive ingestion before tool call failed: {e}")
 
             # Initialize tools if not already done
             if not self.tools:
