@@ -18,8 +18,8 @@ config:
   incremental_max_depth: 1
   
   # LLM settings
-  summary_provider: ""  # e.g. "openai" for litellm proxy, or leave empty to use host default
-  summary_model: ""  # e.g. "gemini-2.5-flash" via litellm, or leave empty to use host default
+  summary_provider: ""  # e.g. "openai", or leave empty to use host default
+  summary_model: ""  # e.g. "gemini-2.5-flash", or leave empty to use host default
   summary_timeout_ms: 60000
   custom_instructions: ""
   
