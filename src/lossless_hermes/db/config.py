@@ -361,12 +361,12 @@ def resolve_lcm_config(
         summary_provider=(
             to_str(env.get("LCM_SUMMARY_PROVIDER")) or
             to_str(pc.get("summary_provider")) or
-            "openai"  # Default: use OpenAI-compatible API (e.g. litellm proxy)
+            ""  # Default: falls back to the host agent's provider
         ),
         summary_model=(
             to_str(env.get("LCM_SUMMARY_MODEL")) or
             to_str(pc.get("summary_model")) or
-            "gemini-2.5-flash"  # Default: Gemini 2.5 Flash for cost-effective summarization
+            ""  # Default: falls back to the host agent's model
         ),
         large_file_summary_provider=(
             to_str(env.get("LCM_LARGE_FILE_SUMMARY_PROVIDER")) or

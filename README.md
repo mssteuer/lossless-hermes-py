@@ -51,7 +51,7 @@ config:
   enabled: true
   context_threshold: 0.75
   fresh_tail_count: 64
-  summary_model: "gemini-2.5-flash"
+  summary_model: ""  # uses host agent's model by default
 ```
 
 The plugin registers via the `register()` function in `lossless_hermes.__init__`, which returns the `LcmContextEngine` class.
@@ -91,8 +91,8 @@ Settings are resolved with three-tier precedence: **environment variables > plug
 | `condensed_min_fanout` | `4` | Minimum summaries per condensed chunk |
 | `condensed_min_fanout_hard` | `2` | Hard minimum for condensed chunks |
 | `incremental_max_depth` | `1` | Max depth levels to compact per pass |
-| `summary_provider` | `"openai"` | LLM provider for summarization |
-| `summary_model` | `"gemini-2.5-flash"` | Model for summarization |
+| `summary_provider` | `""` | LLM provider for summarization (falls back to host agent's provider) |
+| `summary_model` | `""` | Model for summarization (falls back to host agent's model) |
 | `summary_timeout_ms` | `60000` | Timeout for summarization calls |
 | `circuit_breaker_threshold` | `5` | Consecutive failures before circuit opens |
 | `circuit_breaker_cooldown_ms` | `1800000` | Cooldown before retrying after circuit break (30 min) |
