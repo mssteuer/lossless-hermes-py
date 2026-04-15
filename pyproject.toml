@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "lossless-claw-py"
+name = "lossless-hermes-py"
 version = "0.1.0"
-description = "Lossless Context Management (LCM) for Claude Code — DAG-based conversation summarization that never forgets"
+description = "Lossless Context Management (LCM) for Hermes Agent — DAG-based conversation summarization that never forgets"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
@@ -37,10 +37,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/mssteuer/lossless-claw-py"
-Repository = "https://github.com/mssteuer/lossless-claw-py"
-Issues = "https://github.com/mssteuer/lossless-claw-py/issues"
-Changelog = "https://github.com/mssteuer/lossless-claw-py/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/mssteuer/lossless-hermes-py"
+Repository = "https://github.com/mssteuer/lossless-hermes-py"
+Issues = "https://github.com/mssteuer/lossless-hermes-py/issues"
+Changelog = "https://github.com/mssteuer/lossless-hermes-py/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [

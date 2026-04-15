@@ -263,7 +263,7 @@ NEW CONTENT TO INCORPORATE:
         ]
         
         try:
-            # Use Claude Code's call_llm infrastructure
+            # Use the configured LLM call infrastructure
             response = await self._call_llm_with_timeout(messages, target_tokens * 2)
             
             content = self._extract_content(response)
@@ -363,14 +363,14 @@ class SyncLcmSummarizer:
     ) -> str:
         """Synchronous summarization call."""
         # For now, we'll need to run the async call in a synchronous context
-        # This will need to be adapted based on Claude Code's async infrastructure
+        # This will need to be adapted based on the host's async infrastructure
         import asyncio
         
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
                 # If we're already in an async context, we need a different approach
-                # This is a placeholder - real implementation depends on Claude Code's architecture
+                # This is a placeholder - real implementation depends on the host architecture
                 raise RuntimeError("Cannot call async summarizer from async context synchronously")
             else:
                 return loop.run_until_complete(

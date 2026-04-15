@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial Python port of lossless-claw v0.9.1 (Martian Engineering)
-- DAG-based lossless context management for Claude Code (NousResearch fork)
+- DAG-based lossless context management for Hermes Agent (NousResearch)
 - SQLite storage with FTS5 full-text search and WAL mode
 - Leaf and condensed compaction passes with depth-aware summarization
 - Cache-aware compaction with hot/cold/warm cache state tracking

@@ -1,7 +1,7 @@
 name: "lossless-claw"
 version: "1.0.0"
 description: "Lossless Context Management (LCM) engine with DAG-based summarization"
-author: "Claude Code Team"
+author: "Michael Steuer / MAKE"
 type: "context_engine"
 
 config:

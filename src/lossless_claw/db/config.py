@@ -72,7 +72,7 @@ class LcmConfig:
 
 
 def resolve_hermes_state_dir(env: Dict[str, str] = None) -> str:
-    """Resolve the active Claude Code state directory.
+    """Resolve the active Hermes state directory.
     
     Precedence:
     1. HERMES_HOME environment variable 

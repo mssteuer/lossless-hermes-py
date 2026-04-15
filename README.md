@@ -1,11 +1,11 @@
-# lossless-claw-py
+# lossless-hermes-py
 
-[![PyPI version](https://img.shields.io/pypi/v/lossless-claw-py.svg)](https://pypi.org/project/lossless-claw-py/)
+[![PyPI version](https://img.shields.io/pypi/v/lossless-hermes-py.svg)](https://pypi.org/project/lossless-hermes-py/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 **DAG-based lossless context management for LLM conversations. Never lose a message — summarize them into a directed acyclic graph.**
 
-A Python port of [lossless-claw](https://github.com/Martian-Engineering/lossless-claw) for use with [Claude Code (NousResearch/Hermes)](https://hermes.nousresearch.com) or as a standalone library.
+A Python port of [lossless-claw](https://github.com/Martian-Engineering/lossless-claw) for use with [Hermes Agent](https://hermes.nousresearch.com) or as a standalone library.
 
 ---
 
@@ -36,12 +36,12 @@ LCM operates in two compaction passes that build a summary DAG:
 ## Installation
 
 ```bash
-pip install lossless-claw-py
+pip install lossless-hermes-py
 ```
 
-### As a Claude Code Context Engine Plugin
+### As a Hermes Agent Context Engine Plugin
 
-Place or symlink the package where Claude Code can find it, then configure your `plugin.yaml`:
+Place or symlink the package into your Hermes `plugins/context_engine/` directory, then configure your `plugin.yaml`:
 
 ```yaml
 name: "lossless-claw"
@@ -51,7 +51,7 @@ config:
   enabled: true
   context_threshold: 0.75
   fresh_tail_count: 64
-  summary_model: "gemini/gemini-2.5-flash"
+  summary_model: "gemini-2.5-flash"
 ```
 
 The plugin registers via the `register()` function in `lossless_claw.__init__`, which returns the `LcmContextEngine` class.
@@ -62,8 +62,8 @@ The plugin registers via the `register()` function in `lossless_claw.__init__`, 
 from lossless_claw import LcmContextEngine
 
 engine = LcmContextEngine(
-    model="gemini/gemini-2.5-flash",
-    provider="gemini",
+    model="gemini-2.5-flash",
+    provider="openai",
     config_context_length=128000,
 )
 
@@ -91,8 +91,8 @@ Settings are resolved with three-tier precedence: **environment variables > plug
 | `condensed_min_fanout` | `4` | Minimum summaries per condensed chunk |
 | `condensed_min_fanout_hard` | `2` | Hard minimum for condensed chunks |
 | `incremental_max_depth` | `1` | Max depth levels to compact per pass |
-| `summary_provider` | `""` | LLM provider for summarization (falls back to main provider) |
-| `summary_model` | `""` | Model for summarization (falls back to main model) |
+| `summary_provider` | `"openai"` | LLM provider for summarization |
+| `summary_model` | `"gemini-2.5-flash"` | Model for summarization |
 | `summary_timeout_ms` | `60000` | Timeout for summarization calls |
 | `circuit_breaker_threshold` | `5` | Consecutive failures before circuit opens |
 | `circuit_breaker_cooldown_ms` | `1800000` | Cooldown before retrying after circuit break (30 min) |
@@ -124,7 +124,7 @@ config:
 All config keys can be set via environment variables with the `LCM_` prefix:
 
 ```bash
-export LCM_SUMMARY_MODEL="gemini/gemini-2.5-flash"
+export LCM_SUMMARY_MODEL="gemini-2.5-flash"
 export LCM_FRESH_TAIL_COUNT=32
 export LCM_CONTEXT_THRESHOLD=0.8
 ```
@@ -181,7 +181,7 @@ Drill into specific content. Expand a message to see its full text, a summary to
 
 ```
 src/lossless_claw/
-    __init__.py          # LcmContextEngine — main plugin class, Claude Code integration
+    __init__.py          # LcmContextEngine — main plugin class, Hermes integration
     compaction.py        # CompactionEngine — leaf/condensed passes, cache-aware policy
     assembler.py         # ContextAssembler — reconstructs optimal context from DAG
     summarizer.py        # LLM summarization with circuit breaker pattern
@@ -206,14 +206,15 @@ SQLite with WAL mode for concurrent reads. FTS5 virtual tables for full-text sea
 
 This is a Python port of the original [lossless-claw](https://github.com/Martian-Engineering/lossless-claw) TypeScript implementation. Key adaptations:
 
-- **Target platform**: Claude Code (NousResearch/Hermes) Python plugin system instead of Anthropic's official Claude Code CLI
+- **Target platform**: [Hermes Agent](https://hermes.nousresearch.com) (NousResearch) Python plugin system instead of OpenClaw
 - **Plugin interface**: Implements `ContextEngine` base class from `agent.context_engine` with `register()` entry point
-- **LLM calls**: Provider-agnostic via configurable summarizer (supports litellm, direct API calls) rather than Anthropic SDK
-- **Default summarization model**: Gemini 2.5 Flash instead of Claude
-- **Async model**: Synchronous by default (matching the plugin interface) rather than async-first
+- **LLM calls**: Provider-agnostic via configurable summarizer (supports litellm, direct API calls) rather than being tied to a specific SDK
+- **Default summarization model**: Gemini 2.5 Flash (configurable to any model)
+- **Async model**: Synchronous by default (matching the Hermes plugin interface) rather than async-first
 - **Config resolution**: Three-tier env/yaml/defaults pattern adapted for Python conventions
 - **Token estimation**: Custom Unicode-aware estimator (`tokens.py`) with CJK and emoji handling
 - **Database**: Same SQLite/FTS5 approach, using Python's built-in `sqlite3` module
+- **Standalone support**: Works both as a Hermes plugin and as a standalone library — the `ContextEngine` import is optional
 
 The core algorithm — DAG-based compaction with leaf and condensed passes, fresh-tail protection, cache-aware compaction policies — is a faithful port of the original.
 
@@ -221,7 +222,7 @@ The core algorithm — DAG-based compaction with leaf and condensed passes, fres
 
 - **[lossless-claw](https://github.com/Martian-Engineering/lossless-claw)** by Josh Lehman / [Martian Engineering](https://github.com/Martian-Engineering) (MIT License) — the original TypeScript implementation this project is ported from
 - **[The LCM Paper](https://papers.voltropy.com/LCM)** by Voltropy — the academic foundation for lossless context management
-- **[Claude Code / Hermes](https://github.com/NousResearch/hermes)** by NousResearch — the target platform whose context engine plugin system this integrates with
+- **[Hermes Agent](https://github.com/NousResearch/hermes)** by NousResearch — the target platform whose context engine plugin system this integrates with
 
 ## License
 

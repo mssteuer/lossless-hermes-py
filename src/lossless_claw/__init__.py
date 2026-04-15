@@ -1,4 +1,4 @@
-"""LCM Context Engine Plugin for Claude Code.
+"""LCM Context Engine Plugin for Hermes Agent.
 
 Provides lossless context management with DAG-based summarization,
 cache-aware compaction, and full-text search capabilities.
@@ -9,11 +9,11 @@ import os
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 
-# Import Claude Code's context engine interface (optional dependency)
+# Import Hermes Agent's context engine interface (optional dependency)
 try:
     from agent.context_engine import ContextEngine
 except ImportError:
-    # Running standalone (not as a Claude Code plugin) — provide a base class stub
+    # Running standalone (not as a Hermes Agent plugin) — provide a base class stub
     class ContextEngine:
         """Stub ContextEngine for standalone usage."""
         def update_from_response(self, usage): pass
@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
 
 
 class LcmContextEngine(ContextEngine):
-    """LCM (Lossless Context Management) Context Engine for Claude Code."""
+    """LCM (Lossless Context Management) Context Engine for Hermes Agent."""
     
     @property
     def name(self) -> str:
@@ -421,10 +421,10 @@ class LcmContextEngine(ContextEngine):
 
 def register(ctx):
     """Register the LCM context engine plugin."""
-    # This function will be called by Claude Code's plugin system
+    # This function will be called by the Hermes plugin system
     # ctx would contain the plugin context/registry
     
     logger.info("LCM context engine plugin registered")
     
-    # Return the engine class for Claude Code to instantiate
+    # Return the engine class for Hermes to instantiate
     return LcmContextEngine
