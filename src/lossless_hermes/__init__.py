@@ -4,6 +4,8 @@ Provides lossless context management with DAG-based summarization,
 cache-aware compaction, and full-text search capabilities.
 """
 
+__version__ = "0.1.0"
+
 import logging
 from typing import Any
 
@@ -297,7 +299,7 @@ class LcmContextEngine(ContextEngine):
 
     def _ingest_messages(self, conversation_id: int, messages: list[dict[str, Any]]):
         """Ingest new messages into LCM storage.
-        
+
         Safe for progressive/repeated calls - uses identity hashing to
         deduplicate messages that have already been stored.
         """

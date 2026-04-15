@@ -13,7 +13,7 @@ authors = [
     {name = "Michael Steuer", email = "michael@make.services"},
 ]
 keywords = [
-    "claude-code",
+    "hermes-agent",
     "context-management",
     "llm",
     "summarization",
@@ -62,7 +62,7 @@ packages = ["src/lossless_hermes"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "lcm/",
+    "src/lossless_hermes/",
     "tests/",
     "README.md",
     "LICENSE",
@@ -89,5 +89,7 @@ disallow_untyped_defs = false
 
 [dependency-groups]
 dev = [
+    "hatch>=1.16.5",
     "pytest>=9.0.3",
+    "ruff>=0.15.10",
 ]

@@ -39,24 +39,57 @@ LCM operates in two compaction passes that build a summary DAG:
 pip install lossless-hermes-py
 ```
 
-### As a Hermes Agent Context Engine Plugin
+### Setting Up as a Hermes Agent Plugin
 
-Place or symlink the package into your Hermes `plugins/context_engine/` directory, then configure your `plugin.yaml`:
+After installing, three steps are needed to activate LCM as your context engine:
 
-```yaml
-name: "lossless-hermes"
-type: "context_engine"
+**Step 1 — Symlink the package into the plugin directory:**
 
-config:
-  enabled: true
-  context_threshold: 0.75
-  fresh_tail_count: 64
-  summary_model: ""  # uses host agent's model by default
+```bash
+# Find where pip installed the package
+HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
+LCM_PATH=$(python -c "import lossless_hermes; import os; print(os.path.dirname(lossless_hermes.__file__))")
+
+# Create the symlink
+ln -s "$LCM_PATH" "$HERMES_HOME/hermes-agent/plugins/context_engine/lcm"
 ```
 
-The plugin registers via the `register()` function in `lossless_hermes.__init__`, which returns the `LcmContextEngine` class.
+**Step 2 — Enable the engine in `config.yaml`:**
+
+Add this at the **top level** of `~/.hermes/config.yaml` (not under `agent:`):
+
+```yaml
+context:
+  engine: lcm
+```
+
+**Step 3 — (Optional) Configure the summarization model:**
+
+By default, LCM uses your main model for summarization. To use a cheaper/faster model instead, edit the `plugin.yaml` inside the symlinked directory:
+
+```bash
+# Edit the plugin config
+nano "$HERMES_HOME/hermes-agent/plugins/context_engine/lcm/plugin.yaml"
+```
+
+```yaml
+config:
+  summary_provider: "openai"          # or your litellm provider name
+  summary_model: "gemini-2.5-flash"   # any model your provider supports
+```
+
+**Step 4 — Restart the gateway:**
+
+```bash
+systemctl --user restart hermes-gateway.service
+# Or however you restart your Hermes instance
+```
+
+You should see `LCM context engine plugin registered` in the gateway logs. The agent will now have `lcm_grep`, `lcm_describe`, and `lcm_expand` tools available.
 
 ### Standalone Usage
+
+LCM also works as a standalone library without Hermes:
 
 ```python
 from lossless_hermes import LcmContextEngine
@@ -66,6 +99,9 @@ engine = LcmContextEngine(
     provider="openai",
     config_context_length=128000,
 )
+
+# Start a session
+engine.on_session_start("my-session")
 
 # Check if compaction is needed
 if engine.should_compress(prompt_tokens=100000):
