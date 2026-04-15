@@ -1,4 +1,4 @@
-name: "lossless-claw"
+name: "lossless-hermes"
 version: "1.0.0"
 description: "Lossless Context Management (LCM) engine with DAG-based summarization"
 author: "Michael Steuer / MAKE"

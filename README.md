@@ -44,7 +44,7 @@ pip install lossless-hermes-py
 Place or symlink the package into your Hermes `plugins/context_engine/` directory, then configure your `plugin.yaml`:
 
 ```yaml
-name: "lossless-claw"
+name: "lossless-hermes"
 type: "context_engine"
 
 config:
