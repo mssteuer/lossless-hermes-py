@@ -245,9 +245,9 @@ class LcmContextEngine(ContextEngine):
         try:
             self._ensure_initialized()
 
-            # Get session ID from kwargs or generate default
-            session_id = kwargs.get("session_id", "default_session")
-            conversation_id = self._ensure_conversation(session_id)
+            # Use current session if available, fall back to kwargs
+            session_id = self.current_session_id or kwargs.get("session_id", "default_session")
+            conversation_id = self.current_conversation_id or self._ensure_conversation(session_id)
 
             # Ingest new messages
             self._ingest_messages(conversation_id, messages)
@@ -373,9 +373,9 @@ class LcmContextEngine(ContextEngine):
             return '{"error": "LCM is disabled"}'
 
         try:
-            # Ensure we have an active conversation
-            session_id = kwargs.get("session_id", "default_session")
-            conversation_id = self._ensure_conversation(session_id)
+            # Use current session if available, fall back to kwargs
+            session_id = self.current_session_id or kwargs.get("session_id", "default_session")
+            conversation_id = self.current_conversation_id or self._ensure_conversation(session_id)
 
             # Initialize tools if not already done
             if not self.tools:
