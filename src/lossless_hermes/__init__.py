@@ -4,7 +4,7 @@ Provides lossless context management with DAG-based summarization,
 cache-aware compaction, and full-text search capabilities.
 """
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 import logging
 from typing import Any

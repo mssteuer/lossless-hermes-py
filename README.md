@@ -234,7 +234,7 @@ This is a Python port of the original [lossless-claw](https://github.com/Martian
 
 - **Target platform**: [Hermes Agent](https://hermes.nousresearch.com) (NousResearch) Python plugin system instead of OpenClaw
 - **Plugin interface**: Implements `ContextEngine` base class from `agent.context_engine` with `register()` entry point
-- **LLM calls**: Provider-agnostic via configurable summarizer (supports litellm, direct API calls) rather than being tied to a specific SDK
+- **LLM calls**: Provider-agnostic via configurable summarizer rather than being tied to a specific SDK
 - **Default summarization model**: Gemini 2.5 Flash (configurable to any model)
 - **Async model**: Synchronous by default (matching the Hermes plugin interface) rather than async-first
 - **Config resolution**: Three-tier env/yaml/defaults pattern adapted for Python conventions
