@@ -4,7 +4,7 @@ Provides lossless context management with DAG-based summarization,
 cache-aware compaction, and full-text search capabilities.
 """
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 import logging
 from typing import Any
@@ -88,7 +88,7 @@ class LcmContextEngine(ContextEngine):
 
     @property
     def name(self) -> str:
-        return "lcm"
+        return "lossless-hermes"
 
     def __init__(
         self,

@@ -45,7 +45,7 @@ Then enable the engine in `~/.hermes/config.yaml` (top level, not under `agent:`
 
 ```yaml
 context:
-  engine: lcm
+  engine: lossless-hermes
 ```
 
 **(Optional)** Configure a dedicated summarization model via environment variables in `~/.hermes/.env`:
