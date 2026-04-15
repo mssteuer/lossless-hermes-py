@@ -51,8 +51,8 @@ context:
 **(Optional)** Configure a dedicated summarization model via environment variables in `~/.hermes/.env`:
 
 ```bash
-LCM_SUMMARY_MODEL=gemini-2.5-flash
-LCM_SUMMARY_PROVIDER=openai          # your litellm provider name
+LCM_SUMMARY_MODEL=gpt-4o-mini
+LCM_SUMMARY_PROVIDER=openai
 ```
 
 Or edit the plugin's `plugin.yaml` directly:
@@ -85,7 +85,7 @@ LCM also works as a standalone library without Hermes:
 from lossless_hermes import LcmContextEngine
 
 engine = LcmContextEngine(
-    model="gemini-2.5-flash",
+    model="gpt-4o-mini",
     provider="openai",
     config_context_length=128000,
 )
