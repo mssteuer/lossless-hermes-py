@@ -108,7 +108,20 @@ class LcmContextEngine(ContextEngine):
         self.provider = provider
         self.api_mode = api_mode
 
-        # Load configuration
+        # Load configuration — try plugin.yaml co-located with this module
+        if plugin_config is None:
+            import os
+
+            import yaml
+
+            _yaml_path = os.path.join(os.path.dirname(__file__), "plugin.yaml")
+            if os.path.exists(_yaml_path):
+                try:
+                    with open(_yaml_path) as _f:
+                        _meta = yaml.safe_load(_f) or {}
+                    plugin_config = _meta.get("config", {})
+                except Exception:
+                    plugin_config = {}
         self.config = resolve_lcm_config(plugin_config=plugin_config)
 
         # Initialize context length and thresholds
