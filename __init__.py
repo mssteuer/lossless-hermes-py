@@ -8,8 +8,8 @@ this file is discovered as the plugin module. It bootstraps the engine
 from the src/lossless_hermes/ package and registers it as a context engine.
 """
 
-import sys
 import logging
+import sys
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -28,6 +28,7 @@ def register(ctx):
 
     try:
         from lossless_hermes import LcmContextEngine
+
         engine = LcmContextEngine()
         ctx.register_context_engine(engine)
         logger.info("LCM context engine registered via plugin system")
